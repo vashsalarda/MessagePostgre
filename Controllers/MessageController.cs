@@ -20,7 +20,6 @@ namespace MessagePostgre.Controllers
 			_context = context;
 		}
 
-		// GET: api/Message
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<MessageModel>>> GetMessages()
 		{
@@ -31,9 +30,8 @@ namespace MessagePostgre.Controllers
 			return await _context.Messages.ToListAsync();
 		}
 
-		// GET: api/Message/5
 		[HttpGet("{id}")]
-		public async Task<ActionResult<MessageModel>> GetMessageModel(long id)
+		public async Task<ActionResult<MessageModel>> GetMessageModel(string id)
 		{
 			if (_context.Messages == null)
 			{
@@ -49,10 +47,8 @@ namespace MessagePostgre.Controllers
 			return messageModel;
 		}
 
-		// PUT: api/Message/5
-		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 		[HttpPut("{id}")]
-		public async Task<IActionResult> PutMessageModel(long id, MessageModel messageModel)
+		public async Task<IActionResult> PutMessageModel(string id, MessageModel messageModel)
 		{
 			if (id != messageModel.Id)
 			{
@@ -80,24 +76,24 @@ namespace MessagePostgre.Controllers
 			return NoContent();
 		}
 
-		// POST: api/Message
-		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 		[HttpPost]
-		public async Task<ActionResult<MessageModel>> PostMessageModel(MessageModel messageModel)
+		public async Task<ActionResult<MessageModel>> PostMessageModel(MessageModel message)
 		{
 			if (_context.Messages == null)
 			{
 				return Problem("Entity set 'MessageContext.Messages'  is null.");
 			}
-			_context.Messages.Add(messageModel);
+
+			message.Id = Guid.NewGuid().ToString();
+			_context.Messages.Add(message);
+
 			await _context.SaveChangesAsync();
 
-			return CreatedAtAction("GetMessageModel", new { id = messageModel.Id }, messageModel);
+			return CreatedAtAction("GetMessageModel", new { id = message.Id }, message);
 		}
 
-		// DELETE: api/Message/5
 		[HttpDelete("{id}")]
-		public async Task<IActionResult> DeleteMessageModel(long id)
+		public async Task<IActionResult> DeleteMessageModel(string id)
 		{
 			if (_context.Messages == null)
 			{
@@ -115,7 +111,7 @@ namespace MessagePostgre.Controllers
 			return NoContent();
 		}
 
-		private bool MessageModelExists(long id)
+		private bool MessageModelExists(string id)
 		{
 			return (_context.Messages?.Any(e => e.Id == id)).GetValueOrDefault();
 		}
