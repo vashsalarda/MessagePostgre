@@ -1,69 +1,61 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MessagePostgre.Models;
+using Message.API.Models;
+using Message.API.Services;
+using System.Net;
 
-namespace MessagePostgre.Controllers
+namespace Message.API.Controllers
 {
 	[Route("messages")]
 	[ApiController]
 	public class MessageController : ControllerBase
 	{
-		private readonly MessageContext _context;
+		// private readonly MessageContext _context;
+		private readonly IMessageService _messageService;
 
-		public MessageController(MessageContext context)
+		public MessageController(IMessageService messageService)
 		{
-			_context = context;
+			_messageService = messageService;
 		}
 
-		[HttpGet]
+		[HttpGet(Name = "GetMessages")]
+		[ProducesResponseType(typeof(IEnumerable<MessageModel>), (int)HttpStatusCode.OK)]
 		public async Task<ActionResult<IEnumerable<MessageModel>>> GetMessages()
 		{
-			if (_context.Messages == null)
-			{
-				return NotFound();
-			}
-			return await _context.Messages.ToListAsync();
+			var users = await _messageService.GetAll();
+        	return Ok(users);
 		}
 
-		[HttpGet("{id}")]
-		public async Task<ActionResult<MessageModel>> GetMessageModel(string id)
+		[HttpGet("{id}", Name = "GetMessage")]
+		[ProducesResponseType(typeof(MessageModel), (int)HttpStatusCode.OK)]
+		public async Task<ActionResult<MessageModel>> GetMessage(string id)
 		{
-			if (_context.Messages == null)
-			{
-				return NotFound();
-			}
-			var messageModel = await _context.Messages.FindAsync(id);
+			var message = await _messageService.GetById(id);
 
-			if (messageModel == null)
+			if (message == null)
 			{
 				return NotFound();
 			}
 
-			return messageModel;
+			return Ok(message);
 		}
 
-		[HttpPut("{id}")]
-		public async Task<IActionResult> PutMessageModel(string id, MessageModel messageModel)
+		[HttpPut("{id}", Name = "PutMessage")]
+		public async Task<IActionResult> PutMessage(string id, MessageModel message)
 		{
-			if (id != messageModel.Id)
+			if (id != message.Id)
 			{
 				return BadRequest();
 			}
 
-			_context.Entry(messageModel).State = EntityState.Modified;
-
 			try
 			{
-				await _context.SaveChangesAsync();
+				await _messageService.Update(id, message);
 			}
 			catch (DbUpdateConcurrencyException)
 			{
-				if (!MessageModelExists(id))
+				var messageCheck = await _messageService.GetById(id);
+				if (messageCheck != null)
 				{
 					return NotFound();
 				}
@@ -76,44 +68,22 @@ namespace MessagePostgre.Controllers
 			return NoContent();
 		}
 
-		[HttpPost]
-		public async Task<ActionResult<MessageModel>> PostMessageModel(MessageModel message)
+		[HttpPost(Name = "PostMessage")]
+		public async Task<ActionResult<MessageModel>> PostMessage(MessageModel message)
 		{
-			if (_context.Messages == null)
-			{
-				return Problem("Entity set 'MessageContext.Messages'  is null.");
-			}
-
 			message.Id = Guid.NewGuid().ToString();
-			_context.Messages.Add(message);
+			await _messageService.Create(message);
 
-			await _context.SaveChangesAsync();
-
-			return CreatedAtAction("GetMessageModel", new { id = message.Id }, message);
+			return CreatedAtAction("GetMessage", new { id = message.Id }, message);
 		}
 
-		[HttpDelete("{id}")]
-		public async Task<IActionResult> DeleteMessageModel(string id)
+		[HttpDelete("{id}", Name = "DeleteMessage")]
+		public async Task<IActionResult> DeleteMessage(string id)
 		{
-			if (_context.Messages == null)
-			{
+			if (await _messageService.Delete(id))
+				return NoContent();
+			else
 				return NotFound();
-			}
-			var messageModel = await _context.Messages.FindAsync(id);
-			if (messageModel == null)
-			{
-				return NotFound();
-			}
-
-			_context.Messages.Remove(messageModel);
-			await _context.SaveChangesAsync();
-
-			return NoContent();
-		}
-
-		private bool MessageModelExists(string id)
-		{
-			return (_context.Messages?.Any(e => e.Id == id)).GetValueOrDefault();
 		}
 	}
 }

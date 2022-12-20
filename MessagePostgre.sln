@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 25.0.1704.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessagePostgre", "MessagePostgre\MessagePostgre.csproj", "{6C877713-CBBE-432B-94EE-5843778B4BAB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Message.API", "Message.API\Message.API.csproj", "{640068D0-93EB-4315-B3F6-79AAAEFC153D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Message.UnitTests", "Message.UnitTests\Message.UnitTests.csproj", "{782DD3F7-0836-42FA-BEBA-805ADFE58BDB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,14 @@ Global
 		{6C877713-CBBE-432B-94EE-5843778B4BAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C877713-CBBE-432B-94EE-5843778B4BAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C877713-CBBE-432B-94EE-5843778B4BAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{640068D0-93EB-4315-B3F6-79AAAEFC153D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{640068D0-93EB-4315-B3F6-79AAAEFC153D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{640068D0-93EB-4315-B3F6-79AAAEFC153D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{640068D0-93EB-4315-B3F6-79AAAEFC153D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{782DD3F7-0836-42FA-BEBA-805ADFE58BDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{782DD3F7-0836-42FA-BEBA-805ADFE58BDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{782DD3F7-0836-42FA-BEBA-805ADFE58BDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{782DD3F7-0836-42FA-BEBA-805ADFE58BDB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

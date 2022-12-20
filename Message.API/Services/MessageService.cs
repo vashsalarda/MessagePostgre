@@ -1,72 +1,59 @@
-using AutoMapper;
-using MessagePostgre.Models;
+using Message.API.Models;
+using Microsoft.EntityFrameworkCore;
 
-namespace MessagePostgre.Services;
+namespace Message.API.Services;
 
 public interface IMessageService
 {
-	IEnumerable<MessageModel> GetAll();
-	MessageModel GetById(string id);
-	void Create(MessageModel model);
-	void Update(string id, MessageModel model);
-	void Delete(string id);
+	Task<IEnumerable<MessageModel>> GetAll();
+	Task<MessageModel?> GetById(string id);
+	Task<bool> Create(MessageModel model);
+	Task<bool> Update(string id, MessageModel model);
+	Task<bool> Delete(string id);
 }
 
 public class MessageService : IMessageService
 {
 	private MessageContext _context;
-	private readonly IMapper _mapper;
 
-	public MessageService(
-			MessageContext context,
-			IMapper mapper)
+	public MessageService(MessageContext context)
 	{
 		_context = context;
-		_mapper = mapper;
 	}
 
-	public IEnumerable<MessageModel> GetAll()
+	public async Task<IEnumerable<MessageModel>> GetAll()
 	{
-		return _context.Messages;
+		return await _context.Messages.ToListAsync();
 	}
 
-	public MessageModel GetById(string id)
+	public async Task<MessageModel?> GetById(string id)
 	{
-		return getMessage(id);
+		return await _context.Messages.FindAsync(id) ?? null;
 	}
 
-	public void Create(MessageModel model)
+	public async Task<bool> Create(MessageModel message)
 	{
-
-		// map model to new user object
-		var user = _mapper.Map<MessageModel>(model);
-
-		// save user
-		_context.Messages.Add(user);
-		_context.SaveChanges();
+		// save message
+		_context.Messages.Add(message);
+		int affected = await _context.SaveChangesAsync();
+		return affected == 1 ? true : false;
 	}
 
-	public void Update(string id, MessageModel message)
+	public async Task<bool> Update(string id, MessageModel message)
 	{
-		// copy model to user and save
-		// _mapper.Map(model, message);
 		_context.Messages.Update(message);
-		_context.SaveChanges();
+		int affected = await _context.SaveChangesAsync();
+		return affected == 1 ? true : false;
 	}
 
-	public void Delete(string id)
+	public async Task<bool> Delete(string id)
 	{
-		var user = getMessage(id);
-		_context.Messages.Remove(user);
-		_context.SaveChanges();
-	}
+		var message = await _context.Messages.FindAsync(id);
+		if(message == null)
+			return false;
+		var result = _context.Messages.Remove(message);
+		await _context.SaveChangesAsync();
+		return result != null ? true : false;
 
-	// helper methods
-
-	private MessageModel getMessage(string id)
-	{
-		var message = _context.Messages.Find(id);
-		if (message == null) throw new KeyNotFoundException("Message not found");
-		return message;
 	}
 }

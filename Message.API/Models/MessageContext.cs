@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace MessagePostgre.Models
+namespace Message.API.Models
 {
 	public class MessageContext : DbContext
 	{
@@ -14,7 +14,7 @@ namespace MessagePostgre.Models
 		protected override void OnConfiguring(DbContextOptionsBuilder options)
 		{
 			// connect to postgres with connection string from app settings
-			options.UseNpgsql(Configuration.GetConnectionString("WebApiDatabase"));
+			options.UseNpgsql(Configuration.GetConnectionString("WebApiDatabase") ?? "");
 		}
 
 		public DbSet<MessageModel> Messages { get; set; } = null!;

@@ -1,13 +1,15 @@
 using Microsoft.EntityFrameworkCore;
-using MessagePostgre.Models;
+using Message.API.Models;
+using Message.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddDbContext<MessageContext>(opt =>	
-	opt.UseNpgsql(builder.Configuration.GetConnectionString("WebApiDatabase")));
+	opt.UseNpgsql(builder.Configuration.GetConnectionString("WebApiDatabase") ?? ""));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

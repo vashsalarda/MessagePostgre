@@ -1,4 +1,4 @@
-namespace MessagePostgre.Models
+namespace Message.API.Models
 {
 	public class MessageModel
 	{
